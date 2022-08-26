@@ -14,35 +14,44 @@ const inputElevation = document.querySelector('.form__input--elevation');
 let mapEvent;
 let map;
 
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      console.log(position);
-
-      const { latitude } = position.coords;
-      const { longitude } = position.coords;
-      console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
-
-      const coords = [latitude, longitude];
-      // this "map" is html id
-      map = L.map('map').setView(coords, 13); // 13 = zoom
-
-      // change themes of map! .fr/hot?? openstreetmap
-      L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-
-      map.on('click', function (mapE) {
-        mapEvent = mapE;
-        form.classList.remove('hidden');
+class App {
+  constructor() {
+    this._getPosition();
+  }
+  _getPosition() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this._loadMap, function () {
+        alert('Could not find your location!');
       });
-    },
-    function () {
-      alert('Could not find your location!');
     }
-  );
+  }
+
+  _loadMap(position) {
+    console.log(position);
+
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+    console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+
+    const coords = [latitude, longitude];
+    // this "map" is html id
+    map = L.map('map').setView(coords, 13); // 13 = zoom
+
+    // change themes of map! .fr/hot?? openstreetmap
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    map.on('click', function (mapE) {
+      mapEvent = mapE;
+      form.classList.remove('hidden');
+    });
+  }
 }
+
+const app = new App();
+
 form.addEventListener('submit', function (e) {
   e.preventDefault();
 
