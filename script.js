@@ -20,18 +20,21 @@ if (navigator.geolocation) {
       const { longitude } = position.coords;
       console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
+      const coords = [latitude, longitude];
       // this "map" is html id
-      const map = L.map('map').setView([51.505, -0.09], 13);
+      const map = L.map('map').setView(coords, 13); // 13 = zoom
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      // change themes of map! .fr/hot?? openstreetmap
+      L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      L.marker([51.5, -0.09])
-        .addTo(map)
-        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-        .openPopup();
+      map.on('click', function (mapEvent) {
+        const { lat, lng } = mapEvent.latlng;
+
+        L.marker([lat, lng]).addTo(map).bindPopup('Workout').openPopup();
+      });
     },
     function () {
       alert('Could not find your location!');
